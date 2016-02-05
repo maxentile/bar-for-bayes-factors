@@ -6,7 +6,7 @@ if __name__=='__main__':
    # create gaussian test instance
    from models import one_d_gaussian_factory
    initial = one_d_gaussian_factory(0,1)
-   target = one_d_gaussian_factory(4,0.01)
+   target = one_d_gaussian_factory(1,0.1)
    actual_Delta_G = target.exact_integral / initial.exact_integral
 
    from annealing_distributions import GeometricMean
@@ -42,7 +42,6 @@ if __name__=='__main__':
          return - self.f(x)
 
    for beta in test_case.annealing_schedule:
-      
       reduced_potential_funcs.append(SignFlip(LogGeometricMean(initial.log_prob,target.log_prob,beta)))
 
    mbar = MBAR_from_AIS_paths(forward_paths,reverse_paths,reduced_potential_funcs)
