@@ -44,7 +44,7 @@ def mvn_factory(mean_vector,covariance):
       return np.exp(-0.5*(x-mean_vector).dot(inv_cov).dot(x-mean_vector))
 
    d = len(mean_vector)
-   exact_integral = (2*np.pi)**(-d/2.0) * np.linalg.det(covariance)**(-0.5)
+   exact_integral =1/( (2*np.pi)**(-d/2.0) * np.linalg.det(covariance)**(-0.5))
 
    mvn = multivariate_normal(mean=mean_vector,cov=covariance)
 
@@ -52,4 +52,7 @@ def mvn_factory(mean_vector,covariance):
                 draw_sample = mvn.rvs,
                 exact_integral = exact_integral)
                 
-      
+
+def cluster_model_factory(X,k):
+   
+   pass      
