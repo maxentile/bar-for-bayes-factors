@@ -35,17 +35,20 @@ class TestInstance():
 
    def collect_forward_samples(self,n_samples=1000):
       z_f,xs_f,weights_f,ratios_f = annealed_importance_sampling(
-					initial_model.draw_sample,
+					self.initial_model.draw_sample,
 					self.transition_kernels,
 					self.annealing_distributions,
 					n_samples)
       self.xs_f = xs_f
-
+      self.z_f,self.weights_f,self.ratios_f = z_f,weights_f,ratios_f
+      return xs_f
 
    def collect_reverse_samples(self,n_samples=1000):
       z_r,xs_r,weights_r,ratios_r = annealed_importance_sampling(
-                                        target_model.draw_sample,
+                                        self.target_model.draw_sample,
                                         self.transition_kernels[::-1],
                                         self.annealing_distributions[::-1],
                                         n_samples)
+      self.z_r,self.weights_r,self.ratios_r = z_r,weights_r,ratios_r
       self.xs_r = xs_r
+      return xs_r
