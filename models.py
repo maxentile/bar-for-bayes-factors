@@ -7,7 +7,9 @@ class Model():
                 draw_sample,
                 exact_integral=None):
       self.unnormalized_density = unnormalized_density
-
+      
+      self.draw_sample = draw_sample
+     
       if exact_integral != None:
          self.exact_integral = exact_integral
          self.tractable = True
@@ -20,7 +22,7 @@ def one_d_gaussian_factory(mean,variance):
       return np.exp(-(x-mean)**2/(2 * variance))
 
    def draw_sample():
-      return (npr.randn()*np.sqrt(variance))+mean
+      return (npr.randn(1)*np.sqrt(variance))+mean
 
    exact_integral = np.sqrt(variance)*np.sqrt(2*np.pi)
 
@@ -29,3 +31,18 @@ def one_d_gaussian_factory(mean,variance):
                 exact_integral=exact_integral)
 
 
+def mvn_factory(mean_vector,covariance):
+   inv_cov = np.linalg.inv(covariance)
+   def f(x):
+      return np.exp(-0.5*(x-mean_vector).dot(inv_cov).dot(x-mean_vector))
+
+   d = len(mean_vector)
+   exact_integral = (2*np.pi)**(-d/2.0) * np.linalg.det(covariance)**(-0.5)
+
+   mvn = multivariate_normal(mean=mean_vector,cov=covariance)
+
+   return Model(unnormalized_density = f,
+                draw_sample = mvn.rvs,
+                exact_integral = exact_integral)
+                
+      
