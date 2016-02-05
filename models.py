@@ -1,8 +1,12 @@
-# maybe Model should also have an optional instance method for drawing samples?
+import numpy as np
+import numpy.random as npr
 
 class Model():
-   def __init__(self,likelihood_fxn,exact_integral=None):
-      self.likelihood_fxn = likelihood_fxn
+   def __init__(self,
+                unnormalized_density,
+                draw_sample,
+                exact_integral=None):
+      self.unnormalized_density = unnormalized_density
 
       if exact_integral != None:
          self.exact_integral = exact_integral
@@ -12,11 +16,16 @@ class Model():
 
 
 def one_d_gaussian_factory(mean,variance):
-   def likelihood(x):
+   def f(x):
       return np.exp(-(x-mean)**2/(2 * variance))
+
+   def draw_sample():
+      return (npr.randn()*np.sqrt(variance))+mean
 
    exact_integral = np.sqrt(variance)*np.sqrt(2*np.pi)
 
-   return Model(likelihood,exact_integral)
+   return Model(unnormalized_density=f,
+                draw_sample = draw_sample,
+                exact_integral=exact_integral)
 
 
