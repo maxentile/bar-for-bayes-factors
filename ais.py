@@ -27,6 +27,7 @@ def annealed_importance_sampling(draw_exact_initial_sample,
             Parameters 
             ---------- 
             old_sample : (d,), array-like
+            target_f : callable (unnormalized density function)
             
             Returns
             -------
