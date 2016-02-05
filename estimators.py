@@ -50,14 +50,16 @@ def MBAR_from_AIS_paths(forward_paths, reverse_paths, reduced_potential_funcs):
    assert(len(reverse_paths[0])==k)
    
    # form N_k (all states should have the same number of samples)
-   N = n_forward + n_reverse
-   N_k = np.ones(k)*N
+   N_paths = n_forward + n_reverse
+   N_k = np.ones(k)*N_paths
+   N = k*N_paths
 
    # form u_kn
    u_kn = np.zeros((k,N))
 
-   reversed_reverse_paths = [path[::-1] for path in reverse_paths]
-   samples = np.vstack(forward_paths + reverse_reverse_paths)
+   reversed_reverse_paths = np.array([path[::-1] for path in reverse_paths])
+   samples = np.hstack([forward_paths.flatten(),reversed_reverse_paths.flatten()])
+   print(samples.shape)
 
    for i in range(k):
       u = reduced_potential_funcs[i]
@@ -66,11 +68,11 @@ def MBAR_from_AIS_paths(forward_paths, reverse_paths, reduced_potential_funcs):
 
    # run MBAR
    mbar = pymbar.MBAR(u_kn,N_k)
-
+   return mbar
    # return free energy estimates + variance estimates
-   raise NotImplementedError
+   #raise NotImplementedError
 
-def bidirectional_mc_bounds(forward_paths,reverse_paths,reduced_potential_funcs)
+def bidirectional_mc_bounds(forward_paths,reverse_paths,reduced_potential_funcs):
    # compute forward log importance weights
    
    # double check signs here! I think these may both be sign-flipped
