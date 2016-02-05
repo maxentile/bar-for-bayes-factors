@@ -5,7 +5,8 @@ class Model():
    def __init__(self,
                 unnormalized_density,
                 draw_sample,
-                exact_integral=None):
+                exact_integral=None,
+                log_prob=None):
       self.unnormalized_density = unnormalized_density
       
       self.draw_sample = draw_sample
@@ -15,11 +16,16 @@ class Model():
          self.tractable = True
       else:
          self.tractable = False
-
+      if log_prob != None:
+         self.log_prob = log_prob
 
 def one_d_gaussian_factory(mean,variance):
+
+   def log_prob(x):
+      return -((x-mean)**2)/(2*variance)
+
    def f(x):
-      return np.exp(-(x-mean)**2/(2 * variance))
+      return np.exp(log_prob(x))
 
    def draw_sample():
       return (npr.randn(1)*np.sqrt(variance))+mean
@@ -28,7 +34,8 @@ def one_d_gaussian_factory(mean,variance):
 
    return Model(unnormalized_density=f,
                 draw_sample = draw_sample,
-                exact_integral=exact_integral)
+                exact_integral = exact_integral,
+                log_prob = log_prob)
 
 
 def mvn_factory(mean_vector,covariance):
