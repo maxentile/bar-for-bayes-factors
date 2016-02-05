@@ -56,9 +56,17 @@ def MBAR_from_AIS_paths(forward_paths, reverse_paths, reduced_potential_funcs):
 
    # form u_kn
    u_kn = np.zeros((k,N))
-
    reversed_reverse_paths = np.array([path[::-1] for path in reverse_paths])
-   samples = np.hstack([forward_paths.flatten(),reversed_reverse_paths.flatten()])
+
+   # put the samples in k order   
+   ordered_samples = []
+   for i in range(k):
+      for path in forward_paths:
+         ordered_samples.append(path[i])
+      for path in reversed_reverse_paths:
+         ordered_samples.append(path[i])
+
+   samples = np.vstack(ordered_samples)
    print(samples.shape)
 
    for i in range(k):
