@@ -48,3 +48,26 @@ class GeometricMean(AnnealingDistribution):
       f1_x = self.initial(x)
       fT_x = self.target(x)
       return f1_x**(1-self.beta) * fT_x**self.beta
+
+class LogGeometricMean(AnnealingDistribution):
+   ''''
+   Annealed log-density is beta*log_target(x) + (1-beta)*log_initial(x).
+
+   Notes
+   -----
+   - When initial = prior = p(theta) and
+     target = posterior = p(theta) p(y | theta)
+     then this is equivalent to "turning on" the likelihood
+     by p(y | theta)^beta p(theta)
+
+   '''
+
+   def __init__(self,log_initial,log_target,beta):
+      self.initial = log_initial
+      self.target = log_target
+      self.beta = beta
+
+   def __call__(self,x):
+      f1_x = self.initial(x)
+      fT_x = self.target(x)
+      return f1_x*(1-self.beta) + fT_x*self.beta
