@@ -66,6 +66,50 @@ def gaussian_stress_test(name,
 
    return compare(W_Fs,W_Rs,actual_DeltaF,min_samples,n_errbars)
 
+def AIS_stress_test(n_samples=1000,
+               n_replicates=100,
+               min_samples=5,
+               n_errbars=50,
+               name='AIS'):
+   from ais import annealed_importance_sampling
+   
+   from models import one_d_gaussian_factory
+   initial = one_d_gaussian_factory(0,1.0)
+   target = one_d_gaussian_factory(3,0.1)
+   actual_Delta_G = target.exact_integral / initial.exact_integral
+
+   from annealing_distributions import GeometricMean
+   n_annealing = 10
+   annealing_schedule = np.linspace(0,1,n_annealing)
+
+   from transition_kernels import gaussian_random_walk
+   kernels = [gaussian_random_walk for _ in range(n_annealing)]
+
+
+   from test_instance import TestInstance
+   test_case = TestInstance(initial,target,kernels,
+                     GeometricMean,annealing_schedule)
+   annealing_distributions = test_case.annealing_distributions
+
+   W_Fs,W_Rs = [],[]
+   for i in range(n_replicates):
+      _,_,weights_f,_ = annealed_importance_sampling(initial.draw_sample,
+                                          kernels,
+                                          annealing_distributions,
+                                          n_samples)
+      _,_,weights_r,_ = annealed_importance_sampling(target.draw_sample,
+                                          kernels[::-1],
+                                          annealing_distributions[::-1],
+                                          n_samples)
+      #W_Fs.append(np.log(weights_f))
+      #W_Rs.append(np.log(weights_r))
+
+      W_Fs.append(weights_f)
+      W_Rs.append(weights_r)
+
+   actual_DeltaF = np.log(target.exact_integral/initial.exact_integral)
+   return compare(W_Fs,W_Rs,actual_DeltaF,min_samples,n_errbars,name)
+
 
 def compare(W_Fs,W_Rs,actual_DeltaF,min_samples,n_errbars,name):
    n_replicates = len(W_Fs)
