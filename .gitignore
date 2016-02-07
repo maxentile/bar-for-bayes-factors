@@ -1,2 +1,5 @@
+*.pickle
+.ipynb_checkpoints
+*.jpg
 *.swp
 *.pyc
